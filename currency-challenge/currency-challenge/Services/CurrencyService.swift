@@ -16,30 +16,28 @@ struct CurrencyService {
         self.context = context
     }
     
-    func fetchContent() {
+    func fetchContent(with context: NSManagedObjectContext) {
         let dataService = DataService()
-        print("Before Fetch Currency")
         dataService.fetchCurrencies() { result in
             switch result {
             case .success(let list):
-                self.updateCurrencyList(list.currencies)
+                self.updateCurrencyList(list.currencies, with: context)
             case .failure(let error):
                 print("Failed to fetch currencies with error:\(error)")
             }
         }
         
-        print("Before Fetch Rates")
         dataService.fetchExchangeRates() { result in
             switch result {
             case .success(let rates):
-                self.updateRates(rates.quotes, source: rates.source)
+                self.updateRates(rates.quotes, source: rates.source, with: context)
             case .failure(let error):
                 print("Failed to fetch rates with error:\(error)")
             }
         }
     }
     
-    fileprivate func updateCurrencyList(_ list: [String: String]) {
+    fileprivate func updateCurrencyList(_ list: [String: String], with context: NSManagedObjectContext) {
         // Clear existing
         let fetchRequest = NSFetchRequest<CurrencyEntity>(entityName: CurrencyEntity.entityName)
         
@@ -57,7 +55,6 @@ struct CurrencyService {
             entity.name = element.value
         }
         do {
-            print("Saving New Currency")
             try context.save()
         } catch {
             print(error)
@@ -65,7 +62,7 @@ struct CurrencyService {
         }
     }
     
-    fileprivate func updateRates(_ rates: [String: Double], source: String) {
+    fileprivate func updateRates(_ rates: [String: Double], source: String, with context: NSManagedObjectContext) {
 //        print(rates)
         // Clear existing
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
@@ -81,13 +78,10 @@ struct CurrencyService {
             let entity = NSEntityDescription.insertNewObject(forEntityName: RateEntity.entityName, into: self.context) as! RateEntity
             // Transform symbol by removing source str from key
             let symbol = element.key.replaceFirst(of: source, with: "")
-            print("Symbol After Replace: \(symbol)")
             entity.symbol = symbol
-            print("Rate being set: \(element.value)")
             entity.rate = element.value
         }
         do {
-            print("Saving new Rates")
             try context.save()
         } catch {
             print(error)
