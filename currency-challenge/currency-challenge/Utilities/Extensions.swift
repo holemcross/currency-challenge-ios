@@ -9,6 +9,21 @@
 import Foundation
 import SwiftUI
 
+extension String {
+    public func replaceFirst(of pattern: String, with replacement: String) -> String {
+        if let range = self.range(of: pattern) {
+            return self.replacingCharacters(in: range, with: replacement)
+        }
+        return self
+    }
+}
+
+extension URL {
+    static var documentsURL: URL {
+        return try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+    }
+}
+
 extension Decimal {
     var currencyFormatted: String {
         get {

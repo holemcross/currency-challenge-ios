@@ -9,83 +9,23 @@
 import SwiftUI
 
 struct CurrencySelectionView: View {
+    @Environment(\.managedObjectContext) var managedObjectContext
     @Binding var currentSelection: String
     @State var filter: String = ""
-    @State fileprivate var currencyList: [CurrencySelectionItem] = [CurrencySelectionItem(
-            symbol: "USD", name: "United States Dollar"),
-        CurrencySelectionItem(
-            symbol: "JPY", name: "Japanese Yen"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        CurrencySelectionItem(
-        symbol: "EUR", name: "European Euro"),
-        CurrencySelectionItem(
-        symbol: "MXN", name: "Mexican Peso"),
-        ]
+    @State fileprivate var currencyList: [CurrencySelectionItem] = []
     
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    
+    init(currentSelection: Binding<String>) {
+        self._currentSelection = currentSelection
+        self.updateSelectionList(nil)
+    }
+    
+    func updateSelectionList(_ filter: String?) {
+        let cs = CurrencyService(context: managedObjectContext)
+        self.currencyList = cs.getCurrencySelectionList(with: filter)
+        print("Getting Currency Selection List with results \(self.currencyList)")
+    }
     
     func selectedRow(symbol: String) {
         print("Tapped with symbol: \(symbol)")
@@ -119,6 +59,9 @@ struct CurrencySelectionView: View {
         }
         .navigationBarTitle(Text("Currency Selector"), displayMode: .inline)
         .navigationViewStyle(StackNavigationViewStyle())
+        .onAppear( perform: {
+                self.updateSelectionList(nil)
+            })
     }
 }
 
