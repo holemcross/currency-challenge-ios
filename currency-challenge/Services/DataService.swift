@@ -13,7 +13,7 @@ struct DataService {
     fileprivate let baseURLString = "http://api.currencylayer.com"
     
     func fetchCurrencies(completion: @escaping (Result<CurrencyListResult, Error>) -> Void) {
-
+        
         guard let validatedURL = self.createURLComponents(path: "/list", params:["access_key": Constants.apiKey])?.url else {
             completion(.failure(URLError(.badURL)))
             return
@@ -31,7 +31,7 @@ struct DataService {
             } catch let serializationError {
                 completion(.failure(serializationError))
             }
-            }.resume()
+        }.resume()
     }
     
     func fetchExchangeRates(completion: @escaping (Result<CurrencyRatesResult, Error>) -> Void) {

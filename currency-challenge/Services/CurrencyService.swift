@@ -115,7 +115,7 @@ struct CurrencyService {
         let fetchRequest = NSFetchRequest<CurrencyEntity>(entityName: CurrencyEntity.entityName)
         fetchRequest.predicate = predicate
         fetchRequest.sortDescriptors = [sort]
-
+        
         if let currencies = try? context.fetch(fetchRequest) {
             return currencies.map { CurrencySelectionItem(symbol: $0.symbol, name: $0.name)}
         }
@@ -126,7 +126,7 @@ struct CurrencyService {
         let sort = NSSortDescriptor(key: "symbol", ascending: true)
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
         fetchRequest.sortDescriptors = [sort]
-
+        
         if let rates = try? context.fetch(fetchRequest) {
             print("Collected Rates \(rates.count)")
             return rates.map {
@@ -140,7 +140,7 @@ struct CurrencyService {
         let predicate = NSPredicate(format: "(symbol MATCHES[c] %@)", from)
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
         fetchRequest.predicate = predicate
-
+        
         if let rate = try? context.fetch(fetchRequest).first {
             return rate.rate
         }
@@ -151,7 +151,7 @@ struct CurrencyService {
         let predicate = NSPredicate(format: "(symbol MATCHES[c] %@)", symbol)
         let fetchRequest = NSFetchRequest<CurrencyEntity>(entityName: CurrencyEntity.entityName)
         fetchRequest.predicate = predicate
-
+        
         if let currency = try? context.fetch(fetchRequest).first {
             return currency.name
         }

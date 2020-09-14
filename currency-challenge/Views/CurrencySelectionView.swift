@@ -37,15 +37,15 @@ struct CurrencySelectionView: View {
                 .frame(width: nil, height: 44, alignment: .trailing)
                 .padding(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
             List(currencyList.filter { filter.isEmpty ? true : $0.name.uppercased().contains(filter.uppercased()) || $0.symbol.uppercased().contains(filter.uppercased())}, id: \.symbol) { item in
-                    HStack {
-                        Text(item.formattedTitle)
-                        Spacer()
-                        if item.symbol as AnyObject === self.currentSelection as AnyObject {
-                            Text("✅")
-                        }
-                    }.onTapGesture {
-                        self.selectedRow(symbol: item.symbol)
+                HStack {
+                    Text(item.formattedTitle)
+                    Spacer()
+                    if item.symbol as AnyObject === self.currentSelection as AnyObject {
+                        Text("✅")
                     }
+                }.onTapGesture {
+                    self.selectedRow(symbol: item.symbol)
+                }
             }
         }
         .navigationBarTitle(Text("Currency Selector"), displayMode: .inline)
