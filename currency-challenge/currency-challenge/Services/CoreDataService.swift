@@ -50,4 +50,19 @@ struct CoreDataService {
         context.persistentStoreCoordinator = psc
         return context
     }
+    
+    static func createInMemoryContext() -> NSManagedObjectContext {
+        let modelURL = Bundle.main.url(forResource: CoreDataService.resourceName, withExtension: "momd")
+        guard let model = NSManagedObjectModel(contentsOf: modelURL!) else {
+            fatalError("Model not found!")
+        }
+        
+        let storeURL = URL.documentsURL.appendingPathComponent(CoreDataService.dbName)
+        let psc = NSPersistentStoreCoordinator(managedObjectModel: model)
+        try! psc.addPersistentStore(ofType: NSInMemoryStoreType, configurationName: nil, at: storeURL, options: nil)
+        
+        let context = NSManagedObjectContext(concurrencyType: .privateQueueConcurrencyType)
+        context.persistentStoreCoordinator = psc
+        return context
+    }
 }

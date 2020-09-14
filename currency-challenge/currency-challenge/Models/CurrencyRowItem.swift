@@ -22,6 +22,5 @@ class CurrencyRowItem: Identifiable {
     func rightTitle(_ fromRate: Double, amount: Double) -> String {
         let calc = CurrencyService.convertCurrency(fromRate, toRate: self.sourceRate, amount: amount)
         return "\(self.symbol) \(String(format: "%.2f", calc))"
-//        return "\(self.symbol) \(String(format: "%.2f", self.sourceRate * amount))"
     }
 }

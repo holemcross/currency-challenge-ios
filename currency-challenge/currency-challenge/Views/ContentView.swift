@@ -110,7 +110,6 @@ struct ContentView: View {
             }
         }.onAppear() {
             self.checkRefresh()
-//            self.reloadData()
         }
         .actionSheet(isPresented: self.$showAlert) {
             ActionSheet(
