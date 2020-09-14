@@ -9,16 +9,18 @@
 import SwiftUI
 
 struct ContentView: View {
-    
     @State fileprivate var selectedCurrency: String = "USD"
     @State fileprivate var amount: String = "1"
-//    @State fileprivate var rowItems: [CurrencyRowItem] = []
+    @State var rowItems: [CurrencyRowItem] = []
+    @State var sourceRate: Double = 1
     
-    fileprivate var rowItems: [CurrencyRowItem]
+    fileprivate var cs: CurrencyService
+    
     
     init() {
-//        rowItems = []
-        rowItems = [CurrencyRowItem(symbol: "JPY", name: "Japanese Yen", amount: 0.94), CurrencyRowItem(symbol: "EUR", name: "Euro", amount: 1.20)]
+        let cs = CurrencyService(context: CoreDataService.shared.mainContext)
+        cs.fetchContent(with: CoreDataService.shared.backgroundContext)
+        self.cs = cs
     }
     
     var body: some View {
@@ -35,30 +37,43 @@ struct ContentView: View {
                         .padding()
                         .cornerRadius(5)
                     })
-                    //                    .frame(width: 150, height: 90)
-                    DoneTextField("Amount", text: $amount, keyboardType: UIKeyboardType.decimalPad, alignment: .right)
+                    TextField("Amount", text: $amount)
+                        .multilineTextAlignment(.trailing)
+                        .keyboardType(.decimalPad)
                         .frame(width: nil, height: 44, alignment: .trailing)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
                 }
                 HStack(alignment: .center, spacing: 0) {
                     Text("Currency Name")
+                        .fontWeight(.bold)
                     Spacer()
                     Text("Rate")
-                }.padding(EdgeInsets(top: 8, leading: 32, bottom: 8, trailing: 32))
+                        .fontWeight(.bold)
+                }
+                    .padding(EdgeInsets(top: 8, leading: 32, bottom: 8, trailing: 32))
                     .background(Color.gray)
                     .cornerRadius(32, corners: [.topLeft, .topRight])
+                
                 List {
                     ForEach( rowItems, id: \.symbol ) { item in
                         HStack {
                             Text(item.name)
                             Spacer()
-                            Text("\(item.symbol) \(item.amount.currencyFormatted)")
-                        }.padding()
+                            Text(item.rightTitle(self.sourceRate, amount: (self.amount as NSString).doubleValue))
+                        }
+                            .padding()
                     }
                 }
             }
             .navigationBarTitle(Text("Currency Converter"), displayMode: .inline)
             .navigationViewStyle(StackNavigationViewStyle())
+            .onTapGesture {
+                self.hideKeyboard()
+            }
+            .onAppear() {
+                self.rowItems = self.cs.getAllCurrencyRates()
+            }
         }
     }
 }

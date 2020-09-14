@@ -11,15 +11,17 @@ import Foundation
 class CurrencyRowItem: Identifiable {
     var symbol: String
     var name: String
-    var amount: Decimal
+    var sourceRate: Double
     
-    init(symbol: String, name: String, amount: Decimal) {
+    init(symbol: String, name: String, sourceRate: Double) {
         self.symbol = symbol
         self.name = name
-        self.amount = amount
+        self.sourceRate = sourceRate
     }
     
-    var rightTitle: String {
-        return "\(self.symbol) \(amount.currencyFormatted)"
+    func rightTitle(_ fromRate: Double, amount: Double) -> String {
+        let calc = CurrencyService.convertCurrency(fromRate, toRate: self.sourceRate, amount: amount)
+        return "\(self.symbol) \(String(format: "%.2f", calc))"
+//        return "\(self.symbol) \(String(format: "%.2f", self.sourceRate * amount))"
     }
 }

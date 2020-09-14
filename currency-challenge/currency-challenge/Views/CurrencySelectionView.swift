@@ -7,61 +7,55 @@
 //
 
 import SwiftUI
+import Combine
 
 struct CurrencySelectionView: View {
-    @Environment(\.managedObjectContext) var managedObjectContext
     @Binding var currentSelection: String
-    @State var filter: String = ""
-    @State fileprivate var currencyList: [CurrencySelectionItem] = []
-    
     @Environment(\.presentationMode) var presentationMode: Binding<PresentationMode>
+    @State var filter: String = ""
+    @State var currencyList: [CurrencySelectionItem] = []
+    var cs:CurrencyService
     
     init(currentSelection: Binding<String>) {
         self._currentSelection = currentSelection
-        self.updateSelectionList(nil)
-    }
-    
-    func updateSelectionList(_ filter: String?) {
-        let cs = CurrencyService(context: managedObjectContext)
-        self.currencyList = cs.getCurrencySelectionList(with: filter)
-        print("Getting Currency Selection List with results \(self.currencyList)")
+        let cs =  CurrencyService(context: CoreDataService.shared.mainContext)
+        self.cs = cs
+        self.currencyList = cs.getCurrencySelectionList(with: nil)
     }
     
     func selectedRow(symbol: String) {
-        print("Tapped with symbol: \(symbol)")
         self.currentSelection = symbol
         self.presentationMode.wrappedValue.dismiss()
     }
     
     var body: some View {
         VStack {
-            VStack {
-                Text("Choose a base currency that you want to compare rates with.")
-                    .padding()
-                DoneTextField("Search for currency by name", text: $filter, keyboardType: UIKeyboardType.alphabet, alignment: .left)
+            Text("Choose a base currency that you want to compare rates with.")
+                .padding()
+            TextField("Search for currency by name", text: $filter)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
                 .frame(width: nil, height: 44, alignment: .trailing)
                 .padding()
-            }
-            List {
-                ForEach(currencyList, id: \.symbol) { item in
+            List(currencyList.filter { filter.isEmpty ? true : $0.name.uppercased().contains(filter.uppercased()) || $0.symbol.uppercased().contains(filter.uppercased())}, id: \.symbol) { item in
                     HStack {
                         Text(item.formattedTitle)
                         Spacer()
-                        if(item.symbol == self.currentSelection) {
+                        if item.symbol as AnyObject === self.currentSelection as AnyObject {
                             Text("✅")
                         }
-                        
                     }.onTapGesture {
                         self.selectedRow(symbol: item.symbol)
                     }
-                }
             }
         }
         .navigationBarTitle(Text("Currency Selector"), displayMode: .inline)
         .navigationViewStyle(StackNavigationViewStyle())
-        .onAppear( perform: {
-                self.updateSelectionList(nil)
-            })
+        .onTapGesture {
+            self.hideKeyboard()
+        }
+        .onAppear() {
+            self.currencyList = self.cs.getCurrencySelectionList(with: nil)
+        }
     }
 }
 

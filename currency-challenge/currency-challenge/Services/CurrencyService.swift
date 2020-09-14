@@ -63,7 +63,6 @@ struct CurrencyService {
     }
     
     fileprivate func updateRates(_ rates: [String: Double], source: String, with context: NSManagedObjectContext) {
-//        print(rates)
         // Clear existing
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
         
@@ -92,10 +91,12 @@ struct CurrencyService {
     func getCurrencySelectionList(with filter: String?) -> [CurrencySelectionItem] {
         var predicate: NSPredicate?
         if let filter = filter, filter.count > 0 {
-            predicate = NSPredicate(format: "symbol like %@ OR name like %@", argumentArray: [filter])
+            predicate = NSPredicate(format: "(symbol CONTAINS[c] %@)", filter)
         }
+        let sort = NSSortDescriptor(key: "symbol", ascending: true)
         let fetchRequest = NSFetchRequest<CurrencyEntity>(entityName: CurrencyEntity.entityName)
         fetchRequest.predicate = predicate
+        fetchRequest.sortDescriptors = [sort]
 
         if let currencies = try? context.fetch(fetchRequest) {
             return currencies.map { CurrencySelectionItem(symbol: $0.symbol, name: $0.name)}
@@ -103,13 +104,33 @@ struct CurrencyService {
         return []
     }
     
-    func convertCurrency(_ from: String, to: String, amount: Decimal ) -> Decimal {
-        // Fetch From USD
-        let fromInUsd = Decimal(1.00)
-        // Fetch To USD
-        let toInUsd = Decimal(1.00)
-        
-        return (amount / fromInUsd) * toInUsd
+    func getAllCurrencyRates() -> [CurrencyRowItem] {
+        let sort = NSSortDescriptor(key: "symbol", ascending: true)
+        let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
+        fetchRequest.sortDescriptors = [sort]
+
+        if let rates = try? context.fetch(fetchRequest) {
+            return rates.map { CurrencyRowItem(symbol: $0.symbol, name: $0.symbol, sourceRate: $0.rate)}
+        }
+        return []
+    }
+    
+    func getCurrencyRate(_ from: String) -> Double? {
+        let predicate = NSPredicate(format: "(symbol MATCHES[c] %@)", from)
+        let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
+        fetchRequest.predicate = predicate
+
+        if let rate = try? context.fetch(fetchRequest).first {
+            return rate.rate
+        }
+        return nil
+    }
+    
+    static func convertCurrency(_ fromRate: Double, toRate: Double, amount: Double ) -> Double {
+        if toRate == 0 {
+            return 0
+        }
+        return (amount / fromRate) * toRate
     }
     
     func getRowDataFor(currency: String)  {
