@@ -25,7 +25,6 @@ struct ContentView: View {
     func checkRefresh() {
         let timestamp = UserDefaults.standard.double(forKey: Constants.timestampKey)
         if timestamp != 0 && ((timestamp + Constants.minRefreshTimeInSeconds) < NSDate().timeIntervalSince1970) {
-            print("All Clear!")
             self.isLoading = false
             self.reloadData()
             return
@@ -35,7 +34,6 @@ struct ContentView: View {
     
     func fetchLatestContent() {
         self.isLoading = true
-        print("Fetching Now!")
         self.cs.fetchContent(with: CoreDataService.shared.mainContext, backgroundContext: CoreDataService.shared.backgroundContext) { (result) in
             
             if result {
@@ -49,13 +47,18 @@ struct ContentView: View {
     }
     
     func reloadData() {
-        print("RELOADING!")
         self.rowItems = self.cs.getAllCurrencyRates()
         self.sourceRate = self.cs.getCurrencyRate(self.selectedCurrency) ?? 1
     }
     
     var body: some View {
-        LoadingView(isShowing: $isLoading) {
+        let selectedCurrencyBinding = Binding<String>(get: {
+            self.selectedCurrency
+        }, set: {
+            self.selectedCurrency = $0
+            self.reloadData()
+        })
+        return LoadingView(isShowing: $isLoading) {
             NavigationView {
                 VStack {
                     HStack {
@@ -64,7 +67,7 @@ struct ContentView: View {
                         Text("Amount")
                     }.padding(EdgeInsets(top: 16, leading: 16, bottom: 0, trailing: 16 ))
                     HStack {
-                        NavigationLink(destination: CurrencySelectionView(currentSelection: self.$selectedCurrency), label: {
+                        NavigationLink(destination: CurrencySelectionView(currentSelection: selectedCurrencyBinding), label: {
                             Text("\(self.selectedCurrency)")
                                 .padding()
                                 .cornerRadius(5)

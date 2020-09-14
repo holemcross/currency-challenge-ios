@@ -27,7 +27,6 @@ struct CurrencyService {
                 dataService.fetchExchangeRates( completion: { (result) in
                     switch result {
                     case .success(let rates):
-                        print("Saving Timestamp \(rates.timestamp)")
                         UserDefaults.standard.set(rates.timestamp, forKey: Constants.timestampKey)
                         self.updateRates(rates.quotes, source: rates.source, with: backgroundContext) { (result) in
                             backgroundContext.performAndWait {
@@ -73,7 +72,6 @@ struct CurrencyService {
         }
         do {
             try context.save()
-            print("Saving Currency")
         } catch {
             print(error)
             context.rollback()
@@ -100,7 +98,6 @@ struct CurrencyService {
         }
         do {
             try context.save()
-            print("Saving Rates")
             callbackHandler(true)
         } catch {
             print(error)
@@ -120,14 +117,12 @@ struct CurrencyService {
         fetchRequest.sortDescriptors = [sort]
 
         if let currencies = try? context.fetch(fetchRequest) {
-            print("Get Currency Selection List: \(currencies.count)")
             return currencies.map { CurrencySelectionItem(symbol: $0.symbol, name: $0.name)}
         }
         return []
     }
     
     func getAllCurrencyRates() -> [CurrencyRowItem] {
-        print("getAllCurrencyRates")
         let sort = NSSortDescriptor(key: "symbol", ascending: true)
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
         fetchRequest.sortDescriptors = [sort]
@@ -138,7 +133,6 @@ struct CurrencyService {
                 CurrencyRowItem(symbol: $0.symbol, name: self.getCurrencyNameForSymbol($0.symbol), sourceRate: $0.rate)
             }
         }
-        print("Early Out")
         return []
     }
     

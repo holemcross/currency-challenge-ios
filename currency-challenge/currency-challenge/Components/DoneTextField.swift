@@ -15,7 +15,6 @@ class WrappableTextField: UITextField, UITextFieldDelegate {
         
         if let currentValue = textField.text as NSString? {
             let proposedValue = currentValue.replacingCharacters(in: range, with: string)
-            print(proposedValue)
             textFieldChangedHandler?(proposedValue as String)
         }
         return true
