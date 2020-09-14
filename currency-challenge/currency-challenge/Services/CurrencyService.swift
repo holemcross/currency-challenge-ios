@@ -8,6 +8,7 @@
 
 import Foundation
 import CoreData
+import Combine
 
 struct CurrencyService {
     var context: NSManagedObjectContext
@@ -16,28 +17,44 @@ struct CurrencyService {
         self.context = context
     }
     
-    func fetchContent(with context: NSManagedObjectContext) {
+    func fetchContent(with mainContext: NSManagedObjectContext, backgroundContext: NSManagedObjectContext, callbackHandler: @escaping (Bool)->Void) {
         let dataService = DataService()
-        dataService.fetchCurrencies() { result in
+        
+        dataService.fetchCurrencies( completion: { (result) in
             switch result {
             case .success(let list):
-                self.updateCurrencyList(list.currencies, with: context)
+                self.updateCurrencyList(list.currencies, with: backgroundContext, callbackHandler: {_ in })
+                dataService.fetchExchangeRates( completion: { (result) in
+                    switch result {
+                    case .success(let rates):
+                        print("Saving Timestamp \(rates.timestamp)")
+                        UserDefaults.standard.set(rates.timestamp, forKey: Constants.timestampKey)
+                        self.updateRates(rates.quotes, source: rates.source, with: backgroundContext) { (result) in
+                            backgroundContext.performAndWait {
+                                do {
+                                    // Sync contexts
+                                    try mainContext.save()
+                                    callbackHandler(result)
+                                } catch {
+                                    print("Failed to sync data across MOCs")
+                                    callbackHandler(false)
+                                }
+                                
+                            }
+                        }
+                    case .failure(let error):
+                        print("Failed to fetch rates with error:\(error)")
+                        callbackHandler(false)
+                    }
+                })
             case .failure(let error):
                 print("Failed to fetch currencies with error:\(error)")
+                callbackHandler(false)
             }
-        }
-        
-        dataService.fetchExchangeRates() { result in
-            switch result {
-            case .success(let rates):
-                self.updateRates(rates.quotes, source: rates.source, with: context)
-            case .failure(let error):
-                print("Failed to fetch rates with error:\(error)")
-            }
-        }
+        })
     }
     
-    fileprivate func updateCurrencyList(_ list: [String: String], with context: NSManagedObjectContext) {
+    fileprivate func updateCurrencyList(_ list: [String: String], with context: NSManagedObjectContext, callbackHandler: @escaping (Bool)->Void) {
         // Clear existing
         let fetchRequest = NSFetchRequest<CurrencyEntity>(entityName: CurrencyEntity.entityName)
         
@@ -56,13 +73,14 @@ struct CurrencyService {
         }
         do {
             try context.save()
+            print("Saving Currency")
         } catch {
             print(error)
             context.rollback()
         }
     }
     
-    fileprivate func updateRates(_ rates: [String: Double], source: String, with context: NSManagedObjectContext) {
+    fileprivate func updateRates(_ rates: [String: Double], source: String, with context: NSManagedObjectContext,  callbackHandler: @escaping (Bool)->Void) {
         // Clear existing
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
         
@@ -82,9 +100,12 @@ struct CurrencyService {
         }
         do {
             try context.save()
+            print("Saving Rates")
+            callbackHandler(true)
         } catch {
             print(error)
             context.rollback()
+            callbackHandler(false)
         }
     }
     
@@ -99,21 +120,25 @@ struct CurrencyService {
         fetchRequest.sortDescriptors = [sort]
 
         if let currencies = try? context.fetch(fetchRequest) {
+            print("Get Currency Selection List: \(currencies.count)")
             return currencies.map { CurrencySelectionItem(symbol: $0.symbol, name: $0.name)}
         }
         return []
     }
     
     func getAllCurrencyRates() -> [CurrencyRowItem] {
+        print("getAllCurrencyRates")
         let sort = NSSortDescriptor(key: "symbol", ascending: true)
         let fetchRequest = NSFetchRequest<RateEntity>(entityName: RateEntity.entityName)
         fetchRequest.sortDescriptors = [sort]
 
         if let rates = try? context.fetch(fetchRequest) {
+            print("Collected Rates \(rates.count)")
             return rates.map {
                 CurrencyRowItem(symbol: $0.symbol, name: self.getCurrencyNameForSymbol($0.symbol), sourceRate: $0.rate)
             }
         }
+        print("Early Out")
         return []
     }
     
@@ -144,9 +169,5 @@ struct CurrencyService {
             return 0
         }
         return (amount / fromRate) * toRate
-    }
-    
-    func getRowDataFor(currency: String)  {
-        
     }
 }

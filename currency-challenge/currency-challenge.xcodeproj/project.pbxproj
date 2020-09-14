@@ -11,6 +11,8 @@
 		0B743B80250D42E60017DE8F /* RateEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B743B7E250D42E50017DE8F /* RateEntity.swift */; };
 		0B743B81250D42E60017DE8F /* CurrencyEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B743B7F250D42E60017DE8F /* CurrencyEntity.swift */; };
 		0B743B83250DE9CB0017DE8F /* Protocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B743B82250DE9CB0017DE8F /* Protocols.swift */; };
+		0B743B87250F38300017DE8F /* ActivityIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B743B86250F38300017DE8F /* ActivityIndicator.swift */; };
+		0B743B89250F3A800017DE8F /* LoadingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0B743B88250F3A800017DE8F /* LoadingView.swift */; };
 		0BAC9CAE250B71BF005C3CC8 /* CurrencySelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC9CAD250B71BF005C3CC8 /* CurrencySelectionView.swift */; };
 		0BAC9CB2250B8739005C3CC8 /* CurrencySelectionItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC9CB1250B8739005C3CC8 /* CurrencySelectionItem.swift */; };
 		0BAC9CB5250CB450005C3CC8 /* DoneTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0BAC9CB4250CB450005C3CC8 /* DoneTextField.swift */; };
@@ -46,6 +48,8 @@
 		0B743B7E250D42E50017DE8F /* RateEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateEntity.swift; sourceTree = "<group>"; };
 		0B743B7F250D42E60017DE8F /* CurrencyEntity.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CurrencyEntity.swift; sourceTree = "<group>"; };
 		0B743B82250DE9CB0017DE8F /* Protocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Protocols.swift; sourceTree = "<group>"; };
+		0B743B86250F38300017DE8F /* ActivityIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityIndicator.swift; sourceTree = "<group>"; };
+		0B743B88250F3A800017DE8F /* LoadingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoadingView.swift; sourceTree = "<group>"; };
 		0BAC9CAD250B71BF005C3CC8 /* CurrencySelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectionView.swift; sourceTree = "<group>"; };
 		0BAC9CB1250B8739005C3CC8 /* CurrencySelectionItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CurrencySelectionItem.swift; sourceTree = "<group>"; };
 		0BAC9CB4250CB450005C3CC8 /* DoneTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoneTextField.swift; sourceTree = "<group>"; };
@@ -101,6 +105,7 @@
 			isa = PBXGroup;
 			children = (
 				0BAC9CB4250CB450005C3CC8 /* DoneTextField.swift */,
+				0B743B86250F38300017DE8F /* ActivityIndicator.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -164,6 +169,7 @@
 			children = (
 				0BFE639E25091206009BBF68 /* ContentView.swift */,
 				0BAC9CAD250B71BF005C3CC8 /* CurrencySelectionView.swift */,
+				0B743B88250F3A800017DE8F /* LoadingView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -295,6 +301,7 @@
 			files = (
 				0BAC9CB5250CB450005C3CC8 /* DoneTextField.swift in Sources */,
 				0B743B81250D42E60017DE8F /* CurrencyEntity.swift in Sources */,
+				0B743B87250F38300017DE8F /* ActivityIndicator.swift in Sources */,
 				0BAC9CAE250B71BF005C3CC8 /* CurrencySelectionView.swift in Sources */,
 				0B743B83250DE9CB0017DE8F /* Protocols.swift in Sources */,
 				0BFE63BF250AA113009BBF68 /* CurrencyService.swift in Sources */,
@@ -305,6 +312,7 @@
 				0BFE639F25091206009BBF68 /* ContentView.swift in Sources */,
 				0BAC9CC2250D02BA005C3CC8 /* CoreDataService.swift in Sources */,
 				0BAC9CB2250B8739005C3CC8 /* CurrencySelectionItem.swift in Sources */,
+				0B743B89250F3A800017DE8F /* LoadingView.swift in Sources */,
 				0BFE63C2250AA274009BBF68 /* CurrencyRowItem.swift in Sources */,
 				0BAC9CC0250D01FC005C3CC8 /* CurrencyModel.xcdatamodeld in Sources */,
 				0BAC9CBD250D0060005C3CC8 /* CurrencyRatesResult.swift in Sources */,

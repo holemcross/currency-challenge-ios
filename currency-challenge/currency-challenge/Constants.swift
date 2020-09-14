@@ -11,4 +11,6 @@ import Foundation
 struct Constants {
 //    static let apiKey = "[Insert Valid Currency Layer API Here]"
     static let apiKey = "6a48d2e0c87b9563a969dfb0cdec9cf3"
+    static let timestampKey = "USER_DEFAULTS_TIMESTAMP"
+    static let minRefreshTimeInSeconds = Double(1600)
 }

@@ -11,7 +11,7 @@ import Foundation
 struct CurrencyRatesResult: Codable {
     var terms: String
     var privacy: String
-    var timestamp: Int
+    var timestamp: Double
     var source: String
     var quotes: [String: Double]
 }

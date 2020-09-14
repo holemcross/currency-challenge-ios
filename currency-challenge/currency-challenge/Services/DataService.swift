@@ -31,7 +31,7 @@ struct DataService {
             } catch let serializationError {
                 completion(.failure(serializationError))
             }
-        }.resume()
+            }.resume()
     }
     
     func fetchExchangeRates(completion: @escaping (Result<CurrencyRatesResult, Error>) -> Void) {
