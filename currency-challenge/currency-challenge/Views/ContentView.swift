@@ -62,7 +62,7 @@ struct ContentView: View {
                             Spacer()
                             Text(item.rightTitle(self.sourceRate, amount: (self.amount as NSString).doubleValue))
                         }
-                            .padding()
+                            
                     }
                 }
             }
@@ -73,6 +73,7 @@ struct ContentView: View {
             }
             .onAppear() {
                 self.rowItems = self.cs.getAllCurrencyRates()
+                self.sourceRate = self.cs.getCurrencyRate(self.selectedCurrency) ?? 1
             }
         }
     }

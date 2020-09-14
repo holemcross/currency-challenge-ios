@@ -110,7 +110,9 @@ struct CurrencyService {
         fetchRequest.sortDescriptors = [sort]
 
         if let rates = try? context.fetch(fetchRequest) {
-            return rates.map { CurrencyRowItem(symbol: $0.symbol, name: $0.symbol, sourceRate: $0.rate)}
+            return rates.map {
+                CurrencyRowItem(symbol: $0.symbol, name: self.getCurrencyNameForSymbol($0.symbol), sourceRate: $0.rate)
+            }
         }
         return []
     }
@@ -124,6 +126,17 @@ struct CurrencyService {
             return rate.rate
         }
         return nil
+    }
+    
+    func getCurrencyNameForSymbol(_ symbol: String) -> String {
+        let predicate = NSPredicate(format: "(symbol MATCHES[c] %@)", symbol)
+        let fetchRequest = NSFetchRequest<CurrencyEntity>(entityName: CurrencyEntity.entityName)
+        fetchRequest.predicate = predicate
+
+        if let currency = try? context.fetch(fetchRequest).first {
+            return currency.name
+        }
+        return ""
     }
     
     static func convertCurrency(_ fromRate: Double, toRate: Double, amount: Double ) -> Double {
